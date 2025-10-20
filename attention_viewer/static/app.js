@@ -108,8 +108,13 @@ function renderHeatmap(tokens, attention) {
   ];
 
   const layout = {
-    xaxis: { title: 'Token index' },
-    yaxis: { title: 'Token index' },
+    xaxis: { title: 'Token index', constrain: 'domain' },
+    yaxis: {
+      title: 'Token index',
+      scaleanchor: 'x',
+      scaleratio: 1,
+      constrain: 'domain',
+    },
     margin: { t: 40, r: 0, l: 60, b: 60 },
   };
 
