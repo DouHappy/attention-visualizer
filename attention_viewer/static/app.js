@@ -6,6 +6,10 @@ const state = {
   headCount: 0,
   tokens: [],
   attention: [],
+  corrections: {
+    source_indices: [],
+    prediction_indices: [],
+  },
 };
 
 const sampleSlider = document.getElementById('sample-slider');
@@ -48,13 +52,21 @@ function clearHighlights() {
   attentionScoreLabel.textContent = '';
 }
 
-function renderTokens(tokens) {
+function renderTokens(tokens, corrections) {
   tokensContainer.innerHTML = '';
+  const sourceSet = new Set(corrections?.source_indices ?? []);
+  const predictionSet = new Set(corrections?.prediction_indices ?? []);
   tokens.forEach((token, index) => {
     const span = document.createElement('span');
     span.className = 'token';
     span.dataset.index = index;
     span.textContent = token;
+    if (sourceSet.has(index)) {
+      span.classList.add('correction-source');
+    }
+    if (predictionSet.has(index)) {
+      span.classList.add('correction-prediction');
+    }
     tokensContainer.appendChild(span);
   });
 }
@@ -162,6 +174,10 @@ async function loadAttention() {
   state.headCount = payload.head_count;
   state.tokens = payload.tokens;
   state.attention = payload.attention;
+  state.corrections = payload.corrections ?? {
+    source_indices: [],
+    prediction_indices: [],
+  };
 
   layerSlider.max = Math.max(0, payload.layer_count - 1);
   layerInput.max = Math.max(0, payload.layer_count - 1);
@@ -179,7 +195,7 @@ async function loadAttention() {
   predictionText.textContent = payload.prediction || '';
   fileInfo.textContent = `${payload.file?.name ?? ''} | start: ${payload.file?.start_id ?? ''} | end: ${payload.file?.end_id ?? ''} | batch: ${payload.file?.batch_index ?? ''}`;
 
-  renderTokens(payload.tokens);
+  renderTokens(payload.tokens, state.corrections);
   renderHeatmap(payload.tokens, payload.attention);
 }
 

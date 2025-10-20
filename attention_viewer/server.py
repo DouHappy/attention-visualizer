@@ -9,7 +9,12 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from .data_loader import AttentionDataset
-from .tokenizer_utils import align_tokens_to_attention, build_chat_tokens, load_tokenizer
+from .tokenizer_utils import (
+    align_tokens_to_attention,
+    build_chat_tokens,
+    compute_correction_indices,
+    load_tokenizer,
+)
 
 
 def create_app(
@@ -83,6 +88,10 @@ def create_app(
             attn_matrix,
             pad_token_id=tokenizer.pad_token_id,
         )
+        correction_source, correction_prediction = compute_correction_indices(tokenised)
+        max_length = len(tokens)
+        correction_source = [idx for idx in correction_source if idx < max_length]
+        correction_prediction = [idx for idx in correction_prediction if idx < max_length]
         attention = trimmed_attention.astype(float).tolist()
 
         return {
@@ -96,6 +105,10 @@ def create_app(
             "attention": attention,
             "source": sample.source,
             "prediction": sample.prediction,
+            "corrections": {
+                "source_indices": correction_source,
+                "prediction_indices": correction_prediction,
+            },
             "file": {
                 "name": sample.file.name,
                 "start_id": sample.file.start_id,

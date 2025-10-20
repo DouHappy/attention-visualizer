@@ -9,6 +9,10 @@
   --accent: #2563eb;
   --accent-light: rgba(37, 99, 235, 0.08);
   --danger: #dc2626;
+  --correction-source: rgba(220, 38, 38, 0.18);
+  --correction-source-border: rgba(220, 38, 38, 0.6);
+  --correction-prediction: rgba(16, 185, 129, 0.18);
+  --correction-prediction-border: rgba(16, 185, 129, 0.6);
 }
 
 body {
@@ -117,9 +121,32 @@ header {
   padding: 0.25rem 0.4rem;
   border-radius: 6px;
   background: rgba(148, 163, 184, 0.15);
+  border: 1px solid transparent;
   font-size: 0.85rem;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
+}
+
+.token.correction-source {
+  background: var(--correction-source);
+  border-color: var(--correction-source-border);
+}
+
+.token.correction-prediction {
+  background: var(--correction-prediction);
+  border-color: var(--correction-prediction-border);
+}
+
+.token.correction-source.correction-prediction {
+  background: linear-gradient(
+    135deg,
+    var(--correction-source) 0%,
+    var(--correction-source) 50%,
+    var(--correction-prediction) 50%,
+    var(--correction-prediction) 100%
+  );
+  border-color: var(--correction-source-border);
+  box-shadow: 0 0 0 1px var(--correction-prediction-border);
 }
 
 .token.highlight-row {
