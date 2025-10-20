@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "attention-viewer"
+version = "0.1.0"
+description = "Web application for visualising transformer attention matrices"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  { name = "OpenAI Assistant" }
+]
+dependencies = [
+  "fastapi",
+  "numpy",
+  "transformers",
+  "typer",
+  "uvicorn[standard]",
+]
+
+[project.scripts]
+attention-viewer = "attention_viewer.__main__:cli"

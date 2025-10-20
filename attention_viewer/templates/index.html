@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attention Viewer</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Attention 分布可视化</h1>
+        <p>使用滑条或输入框来选择要查看的 attention 文件、层和头。</p>
+      </header>
+
+      <section class="controls">
+        <div class="control">
+          <label for="sample-input">Sample ID</label>
+          <div class="control-inputs">
+            <input type="range" id="sample-slider" min="0" max="0" value="0" />
+            <input type="number" id="sample-input" min="0" value="0" />
+          </div>
+        </div>
+        <div class="control">
+          <label for="layer-input">Layer</label>
+          <div class="control-inputs">
+            <input type="range" id="layer-slider" min="0" max="0" value="0" />
+            <input type="number" id="layer-input" min="0" value="0" />
+          </div>
+        </div>
+        <div class="control">
+          <label for="head-input">Head</label>
+          <div class="control-inputs">
+            <input type="range" id="head-slider" min="0" max="0" value="0" />
+            <input type="number" id="head-input" min="0" value="0" />
+          </div>
+        </div>
+      </section>
+
+      <section class="meta">
+        <div>
+          <strong>Source:</strong>
+          <p id="source-text" class="mono"></p>
+        </div>
+        <div>
+          <strong>Prediction:</strong>
+          <p id="prediction-text" class="mono"></p>
+        </div>
+        <div>
+          <strong>文件信息:</strong>
+          <p id="file-info" class="mono"></p>
+        </div>
+      </section>
+
+      <section class="tokens">
+        <h2>Tokens</h2>
+        <div id="tokens-container" class="token-grid"></div>
+      </section>
+
+      <section class="heatmap">
+        <div id="attention-plot"></div>
+        <div class="hover-info">
+          <div><strong>行 Token:</strong> <span id="row-token"></span></div>
+          <div><strong>列 Token:</strong> <span id="col-token"></span></div>
+          <div><strong>Attention Score:</strong> <span id="attention-score"></span></div>
+        </div>
+      </section>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
