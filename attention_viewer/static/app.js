@@ -87,10 +87,15 @@ function highlightTokens(rowIndex, colIndex, value) {
 }
 
 function renderHeatmap(tokens, attention) {
+  const rowCount = attention.length;
+  const colCount = attention[0]?.length ?? 0;
+  const rowTokens = tokens.slice(0, rowCount);
+  const columnTokens = tokens.slice(0, colCount);
+
   const hoverText = attention.map((row, rowIndex) =>
     row.map((value, colIndex) => {
-      const rowToken = tokens[rowIndex] ?? '';
-      const colToken = tokens[colIndex] ?? '';
+      const rowToken = rowTokens[rowIndex] ?? '';
+      const colToken = columnTokens[colIndex] ?? '';
       return `行: ${rowIndex} ${rowToken}<br>列: ${colIndex} ${colToken}<br>Score: ${value.toFixed(6)}`;
     })
   );
@@ -98,8 +103,8 @@ function renderHeatmap(tokens, attention) {
   const data = [
     {
       z: attention,
-      x: tokens.map((token, idx) => `${idx}`),
-      y: tokens.map((token, idx) => `${idx}`),
+      x: columnTokens.map((token, idx) => `${idx}`),
+      y: rowTokens.map((token, idx) => `${idx}`),
       text: hoverText,
       type: 'heatmap',
       hoverinfo: 'text',

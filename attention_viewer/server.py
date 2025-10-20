@@ -103,7 +103,18 @@ def create_app(
         max_length = len(tokens)
         correction_source = [idx for idx in correction_source if idx < max_length]
         correction_prediction = [idx for idx in correction_prediction if idx < max_length]
-        attention = trimmed_attention.astype(float).tolist()
+        attention_with_instruction = trimmed_attention.astype(float)
+        if attention_with_instruction.ndim != 2:
+            raise ValueError("Expected attention matrix to be 2-dimensional after trimming")
+
+        row_sums = attention_with_instruction.sum(axis=1)
+        instruction_column = np.clip(1.0 - row_sums, a_min=0.0, a_max=None)[:, np.newaxis]
+        attention = np.concatenate(
+            [attention_with_instruction, instruction_column], axis=1
+        ).tolist()
+
+        sequence_length = attention_with_instruction.shape[0]
+        tokens = tokens + ["Instruction"]
 
         return {
             "sample_id": sample_id,
@@ -111,7 +122,7 @@ def create_app(
             "head": head,
             "layer_count": sample.layer_count,
             "head_count": sample.head_count,
-            "sequence_length": len(tokens),
+            "sequence_length": int(sequence_length),
             "tokens": tokens,
             "attention": attention,
             "source": sample.source,
