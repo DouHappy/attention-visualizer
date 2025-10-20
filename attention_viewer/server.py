@@ -82,13 +82,24 @@ def create_app(
         attn_matrix: np.ndarray = sample.attentions[layer, head]
 
         tokenised = build_chat_tokens(tokenizer, sample.source, sample.prediction)
+        # Attention matrices in the dataset already omit any system prompt tokens,
+        # so we align the visualised tokens by dropping the same prefix.
+        visible_offset = tokenised.source_span[0] if tokenised.source_span else 0
+        visible_token_ids = tokenised.token_ids[visible_offset:]
+        visible_tokens = tokenised.tokens[visible_offset:]
+
         tokens, trimmed_attention = align_tokens_to_attention(
-            tokenised.token_ids,
-            tokenised.tokens,
+            visible_token_ids,
+            visible_tokens,
             attn_matrix,
             pad_token_id=tokenizer.pad_token_id,
         )
         correction_source, correction_prediction = compute_correction_indices(tokenised)
+        if visible_offset:
+            correction_source = [idx - visible_offset for idx in correction_source if idx >= visible_offset]
+            correction_prediction = [
+                idx - visible_offset for idx in correction_prediction if idx >= visible_offset
+            ]
         max_length = len(tokens)
         correction_source = [idx for idx in correction_source if idx < max_length]
         correction_prediction = [idx for idx in correction_prediction if idx < max_length]
