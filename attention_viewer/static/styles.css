@@ -167,6 +167,12 @@ header {
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
+#attention-plot {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  min-height: 360px;
+}
+
 .hover-info {
   margin-top: 1rem;
   display: grid;
