@@ -50,23 +50,46 @@ def build_chat_tokens(
     else:
         token_ids = list(token_ids)
 
-    tokens = tokenizer.convert_ids_to_tokens(token_ids)
-    text = tokenizer.convert_tokens_to_string(tokens)
+    tokens = [
+        tokenizer.decode(
+            [token_id],
+            skip_special_tokens=False,
+            clean_up_tokenization_spaces=False,
+        )
+        for token_id in token_ids
+    ]
+    text = tokenizer.decode(
+        token_ids,
+        skip_special_tokens=False,
+        clean_up_tokenization_spaces=False,
+    )
 
     return TokenisationResult(token_ids=token_ids, tokens=tokens, text=text)
 
 
-def align_tokens_to_attention(tokens: Sequence[str], expected_length: int) -> List[str]:
-    """Ensure the token list matches the attention matrix size."""
+def align_tokens_to_attention(
+    token_ids: Sequence[int],
+    tokens: Sequence[str],
+    attention: np.ndarray,
+    pad_token_id: int | None = None,
+) -> tuple[List[str], np.ndarray]:
+    """Trim padding tokens and attention matrix to align lengths."""
 
+    token_ids = list(token_ids)
     tokens = list(tokens)
-    if len(tokens) == expected_length:
-        return tokens
 
-    if len(tokens) > expected_length:
-        return tokens[-expected_length:]
+    if attention.ndim != 2 or attention.shape[0] != attention.shape[1]:
+        raise ValueError("Attention matrix must be square (seq_len x seq_len).")
 
-    # Pad with placeholders to avoid crashing the UI.
-    padding = ["<pad>"] * (expected_length - len(tokens))
-    return tokens + padding
+    max_length = min(len(token_ids), len(tokens), attention.shape[0])
+    valid_length = max_length
+
+    if pad_token_id is not None:
+        while valid_length > 0 and token_ids[valid_length - 1] == pad_token_id:
+            valid_length -= 1
+
+    tokens = tokens[:valid_length]
+    trimmed_attention = attention[:valid_length, :valid_length]
+
+    return tokens, trimmed_attention
 

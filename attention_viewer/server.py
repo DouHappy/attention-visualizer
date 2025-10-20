@@ -75,10 +75,15 @@ def create_app(
             )
 
         attn_matrix: np.ndarray = sample.attentions[layer, head]
-        attention = attn_matrix.astype(float).tolist()
 
         tokenised = build_chat_tokens(tokenizer, sample.source, sample.prediction)
-        tokens = align_tokens_to_attention(tokenised.tokens, sample.sequence_length)
+        tokens, trimmed_attention = align_tokens_to_attention(
+            tokenised.token_ids,
+            tokenised.tokens,
+            attn_matrix,
+            pad_token_id=tokenizer.pad_token_id,
+        )
+        attention = trimmed_attention.astype(float).tolist()
 
         return {
             "sample_id": sample_id,
@@ -86,7 +91,7 @@ def create_app(
             "head": head,
             "layer_count": sample.layer_count,
             "head_count": sample.head_count,
-            "sequence_length": sample.sequence_length,
+            "sequence_length": len(tokens),
             "tokens": tokens,
             "attention": attention,
             "source": sample.source,
