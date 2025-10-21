@@ -115,6 +115,38 @@ function renderHeatmap(tokens, attention) {
     },
   ];
 
+  const firstSourceIndex = state.corrections?.source_indices?.[0];
+  const firstPredictionIndex = state.corrections?.prediction_indices?.[0];
+  const highlightRowIndex =
+    typeof firstPredictionIndex === 'number'
+      ? firstPredictionIndex - state.instructionColumnOffset
+      : null;
+  const highlightColIndex =
+    typeof firstSourceIndex === 'number' ? firstSourceIndex : null;
+
+  if (
+    highlightRowIndex !== null &&
+    highlightColIndex !== null &&
+    highlightRowIndex >= 0 &&
+    highlightRowIndex < rowCount &&
+    highlightColIndex >= 0 &&
+    highlightColIndex < colCount
+  ) {
+    data.push({
+      x: [`${highlightColIndex}`],
+      y: [`${highlightRowIndex}`],
+      mode: 'markers',
+      marker: {
+        size: 18,
+        color: 'rgba(0,0,0,0)',
+        line: { color: '#ff3b30', width: 3 },
+        symbol: 'circle-open',
+      },
+      hoverinfo: 'skip',
+      showlegend: false,
+    });
+  }
+
   const layout = {
     xaxis: { title: 'Token index', constrain: 'domain' },
     yaxis: {
