@@ -110,11 +110,24 @@ def create_app(
         row_sums = attention_with_instruction.sum(axis=1)
         instruction_column = np.clip(1.0 - row_sums, a_min=0.0, a_max=None)[:, np.newaxis]
         attention = np.concatenate(
-            [attention_with_instruction, instruction_column], axis=1
+            [instruction_column, attention_with_instruction], axis=1
         ).tolist()
 
         sequence_length = attention_with_instruction.shape[0]
-        tokens = tokens + ["Instruction"]
+        tokens_with_instruction = ["Instruction"] + tokens
+
+        instruction_offset = 1
+        max_token_index = len(tokens_with_instruction)
+        correction_source = [
+            idx + instruction_offset
+            for idx in correction_source
+            if idx + instruction_offset < max_token_index
+        ]
+        correction_prediction = [
+            idx + instruction_offset
+            for idx in correction_prediction
+            if idx + instruction_offset < max_token_index
+        ]
 
         return {
             "sample_id": sample_id,
@@ -123,7 +136,7 @@ def create_app(
             "layer_count": sample.layer_count,
             "head_count": sample.head_count,
             "sequence_length": int(sequence_length),
-            "tokens": tokens,
+            "tokens": tokens_with_instruction,
             "attention": attention,
             "source": sample.source,
             "prediction": sample.prediction,
@@ -131,6 +144,7 @@ def create_app(
                 "source_indices": correction_source,
                 "prediction_indices": correction_prediction,
             },
+            "has_instruction_column": True,
             "file": {
                 "name": sample.file.name,
                 "start_id": sample.file.start_id,
