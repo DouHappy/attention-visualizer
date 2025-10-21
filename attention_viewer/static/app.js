@@ -90,6 +90,16 @@ function highlightTokens(rowIndex, colIndex, value) {
   attentionScoreLabel.textContent = value.toFixed(6);
 }
 
+function getFirstIndex(indices) {
+  if (!Array.isArray(indices) || indices.length === 0) {
+    return null;
+  }
+  return indices.reduce(
+    (minIndex, current) => (current < minIndex ? current : minIndex),
+    indices[0]
+  );
+}
+
 function renderHeatmap(tokens, attention) {
   const rowCount = attention.length;
   const colCount = attention[0]?.length ?? 0;
@@ -114,6 +124,44 @@ function renderHeatmap(tokens, attention) {
       colorscale: 'Viridis',
     },
   ];
+
+  const firstSourceIndex = getFirstIndex(state.corrections?.source_indices);
+  const firstPredictionIndex = getFirstIndex(
+    state.corrections?.prediction_indices
+  );
+
+  if (
+    firstSourceIndex !== null &&
+    firstPredictionIndex !== null
+  ) {
+    const highlightRowIndex = firstPredictionIndex - rowStart;
+    const highlightColIndex = firstSourceIndex;
+
+    if (
+      highlightRowIndex >= 0 &&
+      highlightRowIndex < rowCount &&
+      highlightColIndex >= 0 &&
+      highlightColIndex < colCount
+    ) {
+      data.push({
+        x: [`${highlightColIndex}`],
+        y: [`${highlightRowIndex}`],
+        mode: 'markers',
+        type: 'scatter',
+        marker: {
+          color: '#ff4d4f',
+          size: 12,
+          symbol: 'circle',
+          line: {
+            color: '#ffffff',
+            width: 1,
+          },
+        },
+        hoverinfo: 'skip',
+        showlegend: false,
+      });
+    }
+  }
 
   const layout = {
     xaxis: { title: 'Token index', constrain: 'domain' },
