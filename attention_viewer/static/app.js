@@ -103,7 +103,8 @@ function renderHeatmap(tokens, attention) {
       x: columnTokens.map((token, idx) => `${idx}`),
       y: rowTokens.map((token, idx) => `${idx}`),
       type: 'heatmap',
-      hoverinfo: 'skip',
+      text: "",
+      hoverinfo: 'text',
       hovertemplate: null,
       hoverlabel: {
         bgcolor: 'rgba(0,0,0,0)',
