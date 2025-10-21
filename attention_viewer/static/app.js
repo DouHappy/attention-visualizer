@@ -10,6 +10,7 @@ const state = {
     source_indices: [],
     prediction_indices: [],
   },
+  instructionColumnOffset: 0,
 };
 
 const sampleSlider = document.getElementById('sample-slider');
@@ -73,7 +74,10 @@ function renderTokens(tokens, corrections) {
 
 function highlightTokens(rowIndex, colIndex, value) {
   clearHighlights();
-  const rowToken = tokensContainer.querySelector(`.token[data-index="${rowIndex}"]`);
+  const adjustedRowIndex = rowIndex + state.instructionColumnOffset;
+  const rowToken = tokensContainer.querySelector(
+    `.token[data-index="${adjustedRowIndex}"]`
+  );
   const colToken = tokensContainer.querySelector(`.token[data-index="${colIndex}"]`);
   if (rowToken) {
     rowToken.classList.add('highlight-row');
@@ -89,7 +93,8 @@ function highlightTokens(rowIndex, colIndex, value) {
 function renderHeatmap(tokens, attention) {
   const rowCount = attention.length;
   const colCount = attention[0]?.length ?? 0;
-  const rowTokens = tokens.slice(0, rowCount);
+  const rowStart = state.instructionColumnOffset;
+  const rowTokens = tokens.slice(rowStart, rowStart + rowCount);
   const columnTokens = tokens.slice(0, colCount);
 
   const hoverText = attention.map((row, rowIndex) =>
@@ -188,6 +193,7 @@ async function loadAttention() {
     source_indices: [],
     prediction_indices: [],
   };
+  state.instructionColumnOffset = payload.has_instruction_column ? 1 : 0;
 
   layerSlider.max = Math.max(0, payload.layer_count - 1);
   layerInput.max = Math.max(0, payload.layer_count - 1);
