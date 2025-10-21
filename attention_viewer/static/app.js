@@ -122,6 +122,7 @@ function renderHeatmap(tokens, attention) {
       scaleanchor: 'x',
       scaleratio: 1,
       constrain: 'domain',
+      autorange: 'reversed',
     },
     margin: { t: 40, r: 0, l: 60, b: 60 },
   };
