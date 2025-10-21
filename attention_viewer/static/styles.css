@@ -80,15 +80,25 @@ header {
   display: grid;
   gap: 1rem;
   margin-bottom: 2rem;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  align-items: stretch;
 }
 
-.meta div {
+.meta-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.meta-card {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1rem;
   min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .mono {
@@ -165,6 +175,9 @@ header {
   border-radius: 12px;
   padding: 1rem;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 #attention-plot {
@@ -174,10 +187,13 @@ header {
 }
 
 .hover-info {
-  margin-top: 1rem;
   display: grid;
   gap: 0.35rem;
   font-size: 0.95rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--accent-light);
 }
 
 .hover-info span {

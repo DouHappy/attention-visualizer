@@ -39,15 +39,17 @@
       </section>
 
       <section class="meta">
-        <div>
-          <strong>Source:</strong>
-          <p id="source-text" class="mono"></p>
+        <div class="meta-stack">
+          <div class="meta-card">
+            <strong>Source:</strong>
+            <p id="source-text" class="mono"></p>
+          </div>
+          <div class="meta-card">
+            <strong>Prediction:</strong>
+            <p id="prediction-text" class="mono"></p>
+          </div>
         </div>
-        <div>
-          <strong>Prediction:</strong>
-          <p id="prediction-text" class="mono"></p>
-        </div>
-        <div>
+        <div class="meta-card">
           <strong>文件信息:</strong>
           <p id="file-info" class="mono"></p>
         </div>
@@ -59,12 +61,12 @@
       </section>
 
       <section class="heatmap">
-        <div id="attention-plot"></div>
         <div class="hover-info">
           <div><strong>行 Token:</strong> <span id="row-token"></span></div>
           <div><strong>列 Token:</strong> <span id="col-token"></span></div>
           <div><strong>Attention Score:</strong> <span id="attention-score"></span></div>
         </div>
+        <div id="attention-plot"></div>
       </section>
     </div>
 

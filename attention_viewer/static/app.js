@@ -97,22 +97,19 @@ function renderHeatmap(tokens, attention) {
   const rowTokens = tokens.slice(rowStart, rowStart + rowCount);
   const columnTokens = tokens.slice(0, colCount);
 
-  const hoverText = attention.map((row, rowIndex) =>
-    row.map((value, colIndex) => {
-      const rowToken = rowTokens[rowIndex] ?? '';
-      const colToken = columnTokens[colIndex] ?? '';
-      return `行: ${rowIndex} ${rowToken}<br>列: ${colIndex} ${colToken}<br>Score: ${value.toFixed(6)}`;
-    })
-  );
-
   const data = [
     {
       z: attention,
       x: columnTokens.map((token, idx) => `${idx}`),
       y: rowTokens.map((token, idx) => `${idx}`),
-      text: hoverText,
       type: 'heatmap',
-      hoverinfo: 'text',
+      hoverinfo: 'skip',
+      hovertemplate: null,
+      hoverlabel: {
+        bgcolor: 'rgba(0,0,0,0)',
+        bordercolor: 'rgba(0,0,0,0)',
+        font: { color: 'rgba(0,0,0,0)' },
+      },
       colorscale: 'Viridis',
     },
   ];
