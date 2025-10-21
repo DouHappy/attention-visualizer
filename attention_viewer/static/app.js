@@ -90,12 +90,33 @@ function highlightTokens(rowIndex, colIndex, value) {
   attentionScoreLabel.textContent = value.toFixed(6);
 }
 
+function findFirstIndex(indices = []) {
+  if (!Array.isArray(indices) || indices.length === 0) {
+    return null;
+  }
+  return indices.slice().sort((a, b) => a - b)[0];
+}
+
 function renderHeatmap(tokens, attention) {
   const rowCount = attention.length;
   const colCount = attention[0]?.length ?? 0;
   const rowStart = state.instructionColumnOffset;
   const rowTokens = tokens.slice(rowStart, rowStart + rowCount);
   const columnTokens = tokens.slice(0, colCount);
+
+  const firstSourceIndex = findFirstIndex(state.corrections?.source_indices);
+  const firstPredictionIndex = findFirstIndex(
+    state.corrections?.prediction_indices
+  );
+  const highlightRowIndex =
+    firstSourceIndex != null ? firstSourceIndex - rowStart : null;
+  const shouldHighlightCell =
+    highlightRowIndex != null &&
+    highlightRowIndex >= 0 &&
+    highlightRowIndex < rowCount &&
+    firstPredictionIndex != null &&
+    firstPredictionIndex >= 0 &&
+    firstPredictionIndex < colCount;
 
   const data = [
     {
@@ -114,6 +135,26 @@ function renderHeatmap(tokens, attention) {
       colorscale: 'Viridis',
     },
   ];
+
+  if (shouldHighlightCell) {
+    data.push({
+      x: [`${firstPredictionIndex}`],
+      y: [`${highlightRowIndex}`],
+      type: 'scatter',
+      mode: 'markers',
+      marker: {
+        color: 'rgba(255, 99, 71, 0.9)',
+        size: 14,
+        symbol: 'circle',
+        line: {
+          color: 'rgba(255, 255, 255, 0.9)',
+          width: 2,
+        },
+      },
+      hoverinfo: 'skip',
+      showlegend: false,
+    });
+  }
 
   const layout = {
     xaxis: { title: 'Token index', constrain: 'domain' },
