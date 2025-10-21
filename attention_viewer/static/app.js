@@ -150,7 +150,7 @@ function renderHeatmap(tokens, attention) {
         type: 'scatter',
         marker: {
           color: '#ff4d4f',
-          size: 12,
+          size: 4,
           symbol: 'circle',
           line: {
             color: '#ffffff',
